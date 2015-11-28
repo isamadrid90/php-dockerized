@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -my \
   php5-mcrypt \
   php5-sqlite \
   php5-xdebug \
+  php5-dev \
   php-apc
 
 # Ensure that PHP5 FPM is run as root.
@@ -41,6 +42,13 @@ RUN sed -i '/^;pm\.status_path/s/^;//' /etc/php5/fpm/pool.d/www.conf
 # Prevent PHP Warning: 'xdebug' already loaded.
 # XDebug loaded with the core
 RUN sed -i '/.*xdebug.so$/s/^/;/' /etc/php5/mods-available/xdebug.ini
+
+# Install php mongo
+ENV MONGO_VERSION 2.2.7
+ENV MONGO_PGP 2.2
+ENV MONGO_PHP_VERSION 1.5.5
+RUN pecl install mongo-$MONGO_PHP_VERSION && \
+    echo "extension=mongo.so" > /etc/php5/fpm/conf.d/20-mongo.ini
 
 # Install HHVM
 RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0x5a16e7281be7a449
